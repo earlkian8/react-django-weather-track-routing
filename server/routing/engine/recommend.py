@@ -108,6 +108,7 @@ def explain(best: RouteScore, runner_up: RouteScore | None) -> str:
     for criterion in CRITERIA:
         ours, theirs = criterion.value(best), criterion.value(runner_up)
         if ours != theirs:
-            return f"{criterion.name}: {criterion.compare(ours, theirs)} on Route {runner_up.route_id}."
+            values = criterion.compare(ours, theirs)
+            return f"{criterion.name}: {values} on Route {runner_up.route_id}."
 
     return f"Route {best.route_id} ties with Route {runner_up.route_id} on every criterion."

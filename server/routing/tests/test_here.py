@@ -6,7 +6,7 @@ import pytest
 from django.core.exceptions import ImproperlyConfigured
 
 from routing.exceptions import UpstreamError
-from routing.services.here import Place, geocode, gross_weight_kg, truck_routes
+from routing.services.here import Place, geocode, loaded_weight_kg, truck_routes
 
 from .conftest import TEST_KEY
 
@@ -68,7 +68,7 @@ def test_missing_api_key_is_a_clear_error(mock_http, settings, call):
 )
 def test_gross_weight_is_tare_plus_load_in_kg(settings, tare_lb, load_lb, expected_kg):
     settings.TRUCK_TARE_LB = tare_lb
-    assert gross_weight_kg(load_lb) == expected_kg
+    assert loaded_weight_kg(load_lb) == expected_kg
 
 
 # --- geocode ---------------------------------------------------------------

@@ -49,7 +49,7 @@ class RouteOption:
     via: list[str]  # up to two main route numbers
 
 
-def gross_weight_kg(load_lb: float) -> int:
+def loaded_weight_kg(load_lb: float) -> int:
     """Loaded truck weight in whole kilograms, which is all HERE accepts."""
     return round((settings.TRUCK_TARE_LB + load_lb) * KG_PER_LB)
 

@@ -1,5 +1,6 @@
 import httpx
 import pytest
+from django.core.cache import cache
 
 TEST_KEY = "test-key-that-must-stay-secret"
 
@@ -8,11 +9,13 @@ class MockHttp:
     """Stands in for the network; everything else in httpx stays real.
 
     `replies` is used up in order. A reply is an httpx.Response, an exception
-    to raise, or a JSON-able body to return with a 200.
+    to raise, or a JSON-able body to return with a 200. Set `handler` instead
+    when requests run in parallel and the reply depends on the request.
     """
 
     def __init__(self):
         self.replies = []
+        self.handler = None
         self.requests = []
         self.timeouts = []
 
@@ -23,7 +26,7 @@ class MockHttp:
 
     def _handle(self, request):
         self.requests.append(request)
-        reply = self.replies.pop(0)
+        reply = self.handler(request) if self.handler else self.replies.pop(0)
         if isinstance(reply, Exception):
             raise reply
         if isinstance(reply, httpx.Response):
@@ -43,6 +46,8 @@ def mock_http(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
-def test_api_key(settings):
-    """Keep the real key from .env out of every test."""
+def isolated_settings(settings):
+    """Keep the real API key and the on-disk cache out of every test."""
     settings.HERE_API_KEY = TEST_KEY
+    settings.CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
+    cache.clear()
