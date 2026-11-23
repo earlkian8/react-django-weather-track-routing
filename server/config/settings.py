@@ -10,14 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
@@ -51,7 +52,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -136,3 +136,19 @@ CORS_ALLOWED_ORIGINS = os.getenv(
 ).split(",")
 
 HERE_API_KEY = os.getenv("HERE_API_KEY", "")
+
+# Empty tractor-trailer weight, added to the load to get gross weight for routing.
+TRUCK_TARE_LB = 35000
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": BASE_DIR / ".cache",
+        "OPTIONS": {"MAX_ENTRIES": 5000},
+    }
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.ScopedRateThrottle"],
+    "DEFAULT_THROTTLE_RATES": {"plan": "20/min", "geocode": "120/min"},
+}
