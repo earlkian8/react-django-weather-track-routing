@@ -268,18 +268,18 @@ function Sign({ map, at: [lng, lat], children }: { map: MapLibre; at: [number, n
   )
 }
 
-/** Names the other routes on the map, where each is farthest from the selected one. */
+/** Names the other routes on the map, each where it is farthest from the rest. */
 function RouteTags({ map, plan, route, onSelect }: { map: MapLibre; plan: Plan; route: Route; onSelect: (id: string) => void }) {
   return plan.routes
     .filter((r) => r.id !== route.id)
-    .map((r) => <RouteTag key={r.id} map={map} route={r} selected={route} onSelect={onSelect} />)
+    .map((r) => <RouteTag key={r.id} map={map} plan={plan} route={r} onSelect={onSelect} />)
 }
 
-function RouteTag({ map, route, selected, onSelect }: { map: MapLibre; route: Route; selected: Route; onSelect: (id: string) => void }) {
+function RouteTag({ map, plan, route, onSelect }: { map: MapLibre; plan: Plan; route: Route; onSelect: (id: string) => void }) {
   const [marker, element] = useMarker(map)
   useEffect(() => {
     const mine = buildTrack(route)
-    const others = selected.geometry.filter((_, i) => i % 40 === 0)
+    const others = plan.routes.flatMap((r) => (r.id === route.id ? [] : r.geometry.filter((_, i) => i % 40 === 0)))
     let best = { gap: -1, lng: 0, lat: 0 }
     for (let k = 1; k < 20; k++) {
       const p = pointAt(mine, (mine.total * k) / 20)
@@ -287,7 +287,7 @@ function RouteTag({ map, route, selected, onSelect }: { map: MapLibre; route: Ro
       if (gap > best.gap) best = { gap, ...p }
     }
     marker.setLngLat([best.lng, best.lat])
-  }, [marker, route, selected])
+  }, [marker, route, plan])
   return createPortal(
     <button type="button" className={styles.tag} onClick={() => onSelect(route.id)}>
       <strong>{route.name}</strong> {formatDuration(route.duration_min)}

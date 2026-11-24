@@ -56,6 +56,7 @@ export interface Route {
   rank: number
   via: string[]
   distance_mi: number
+  ferry_mi: number
   duration_min: number
   arrival_time: string
   geometry: LngLat[]

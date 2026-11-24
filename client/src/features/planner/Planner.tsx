@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from 'motion/react'
 import { useId, useRef, type FormEvent } from 'react'
 import { Scene } from '../../art/Scene'
 import { Truss } from '../../art/Truss'
-import { placeName } from '../../domain/place'
+import { isInUS, placeName } from '../../domain/place'
 import { zoneAbbr, zonedToUtc, toZonedInput } from '../../domain/time'
 import { departureZone, formatLoad, INTERVALS, parseLoad, type Trip, type TripErrors } from '../../domain/trip'
 import { PlaceInput } from './PlaceInput'
@@ -11,11 +11,12 @@ import styles from './Planner.module.css'
 
 /** Mirrors TRUCK_TARE_LB in the API settings. */
 const TRUCK_TARE_LB = 35_000
-const GROSS_LIMIT_LB = 80_000
+const US_GROSS_LIMIT_LB = 80_000
+const KG_PER_LB = 0.45359237
 
 const EXAMPLE: Partial<Trip> = {
-  origin: { text: 'Dallas, TX', place: { label: 'Dallas, TX, United States', lat: 32.77823, lng: -96.7951 } },
-  destination: { text: 'Denver, CO', place: { label: 'Denver, CO, United States', lat: 39.74001, lng: -104.99202 } },
+  origin: { text: 'Dallas, TX, United States', place: { label: 'Dallas, TX, United States', lat: 32.77823, lng: -96.7951 } },
+  destination: { text: 'Denver, CO, United States', place: { label: 'Denver, CO, United States', lat: 39.74001, lng: -104.99202 } },
   load: '42,000',
 }
 
@@ -161,9 +162,12 @@ function Load({ trip, error, onChange }: FieldProps) {
   const id = useId()
   const load = parseLoad(trip.load)
   const gross = (load ?? 0) + TRUCK_TARE_LB
+  const { place } = trip.origin
+  const kg = (pounds: number) => `${Math.round(pounds * KG_PER_LB).toLocaleString('en-US')} kg`
   const note =
     load === null ? 'Enter 0 if empty'
-    : gross > GROSS_LIMIT_LB ? `${gross.toLocaleString('en-US')} lb gross, over the usual 80,000`
+    : place && !isInUS(place) ? `${kg(load)} load, ${kg(gross)} gross with the truck`
+    : place && gross > US_GROSS_LIMIT_LB ? `${gross.toLocaleString('en-US')} lb gross, over the usual US 80,000`
     : `${gross.toLocaleString('en-US')} lb gross with the truck`
   return (
     <div className={styles.regulatory}>

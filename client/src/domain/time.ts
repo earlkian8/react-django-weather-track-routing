@@ -42,6 +42,12 @@ export function zoneAbbr(time: number, zone: string): string {
   return parts.find((p) => p.type === 'timeZoneName')!.value
 }
 
+/** Hour (0 to 23) and minute on the local clock. */
+export function clockAt(time: number, zone: string): { hour: number; minute: number } {
+  const wall = new Date(time + offset(time, zone))
+  return { hour: wall.getUTCHours(), minute: wall.getUTCMinutes() }
+}
+
 export function formatDuration(minutes: number): string {
   const hours = Math.floor(minutes / 60)
   const rest = Math.round(minutes % 60)

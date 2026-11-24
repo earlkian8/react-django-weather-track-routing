@@ -3,7 +3,7 @@ import { LoaderCircle, MapPin } from 'lucide-react'
 import { useId, useState, type KeyboardEvent, type Ref } from 'react'
 import { MIN_SEARCH_LENGTH, searchPlaces } from '../../api/client'
 import type { Place } from '../../api/types'
-import { placeName, shortPlace } from '../../domain/place'
+import { placeName } from '../../domain/place'
 import type { PlaceValue } from '../../domain/trip'
 import { useDebounced } from '../../state/useDebounced'
 import styles from './PlaceInput.module.css'
@@ -42,18 +42,22 @@ export function PlaceInput({ label, value, error, placeholder, inputRef, onChang
   const message =
     !open || !ready ? null
     : search.isError ? search.error.message
-    : places?.length === 0 ? 'No places match. Try a city and state.'
+    : places?.length === 0 ? 'No places match. Try a city and country.'
     : null
   const searching = open && text.length >= MIN_SEARCH_LENGTH && !places && !search.isError
 
   function pick(place: Place) {
-    onChange({ text: shortPlace(place.label), place })
+    onChange({ text: place.label, place })
     setOpen(false)
     setActive(-1)
   }
 
   function onKeyDown(event: KeyboardEvent) {
-    if (!showList) return
+    if (!showList) {
+      if (event.key !== 'ArrowDown' || !places?.length) return
+      event.preventDefault()
+      return setOpen(true)
+    }
     const last = places.length - 1
     if (event.key === 'ArrowDown') setActive((i) => (i >= last ? 0 : i + 1))
     else if (event.key === 'ArrowUp') setActive((i) => (i <= 0 ? last : i - 1))
@@ -88,6 +92,7 @@ export function PlaceInput({ label, value, error, placeholder, inputRef, onChang
             setActive(-1)
           }}
           onKeyDown={onKeyDown}
+          onFocus={() => setOpen(true)}
           onBlur={() => setOpen(false)}
         />
         {searching && <LoaderCircle className={styles.spinner} size={20} aria-hidden />}
@@ -104,7 +109,7 @@ export function PlaceInput({ label, value, error, placeholder, inputRef, onChang
                 id={`${id}-${i}`}
                 role="option"
                 aria-selected={i === active}
-                aria-label={shortPlace(place.label)}
+                aria-label={place.label}
                 className={styles.option}
                 // Keeps focus in the input, so blur doesn't close the list before the click lands.
                 onMouseDown={(e) => e.preventDefault()}
@@ -114,7 +119,7 @@ export function PlaceInput({ label, value, error, placeholder, inputRef, onChang
                 <MapPin size={16} aria-hidden />
                 <span>
                   <strong>{name}</strong>
-                  {shortPlace(place.label).slice(name.length)}
+                  {place.label.slice(name.length)}
                 </span>
               </li>
             )

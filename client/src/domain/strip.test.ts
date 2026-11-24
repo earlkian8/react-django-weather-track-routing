@@ -62,6 +62,19 @@ describe('hourTicks', () => {
     expect(hourTicks(track, points, 1, 60).map((t) => t.label)).toEqual(['6 AM', '8 AM'])
   })
 
+  it.each([
+    ['India, half an hour off UTC hours', 77.2, 28.6, '2026-11-24T06:00:00Z', ['12 PM', '1 PM'], [25, 75]],
+    ['Nepal, three quarters off', 85.3, 27.7, '2026-11-24T06:00:00Z', ['12 PM', '1 PM'], [12.5, 62.5]],
+  ])('marks the local hour in %s', (_, lng, lat, start, labels, miles) => {
+    const route = makeRoute()
+    route.geometry = route.geometry.map(([, ], i) => [lng - i * 0.0001, lat])
+    route.checkpoints.forEach((c, i) => (c.eta = new Date(Date.parse(start) + i * 30 * 60_000).toISOString()))
+    const local = buildTrack(route)
+    const ticks = hourTicks(local, waypoints(local, 20), 1)
+    expect(ticks.map((t) => t.label)).toEqual(labels)
+    expect(ticks.map((t) => t.mile)).toEqual(miles)
+  })
+
   it('names the day at midnight', () => {
     const route = makeRoute()
     route.checkpoints.forEach((c) => (c.eta = new Date(Date.parse(c.eta) + 17 * 3_600_000).toISOString()))

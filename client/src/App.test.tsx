@@ -19,9 +19,9 @@ beforeEach(() => {
 
 async function fillIn(user = userEvent.setup()) {
   await user.type(screen.getByRole('combobox', { name: 'From' }), 'amarillo')
-  await user.click(await screen.findByRole('option', { name: 'Amarillo, TX' }))
+  await user.click(await screen.findByRole('option', { name: 'Amarillo, TX, United States' }))
   await user.type(screen.getByRole('combobox', { name: 'To' }), 'denver')
-  await user.click(await screen.findByRole('option', { name: 'Denver, CO' }))
+  await user.click(await screen.findByRole('option', { name: 'Denver, CO, United States' }))
   await user.type(screen.getByLabelText('Load weight in pounds'), '42000')
   return user
 }
@@ -67,6 +67,40 @@ describe('planning a trip', () => {
     await screen.findByRole('heading', { name: /Take Route A/ })
     const [, init] = fetch.mock.calls.find(([url]) => url === '/api/plans/')!
     expect(JSON.parse(init!.body as string)).toMatchObject({ origin: AMARILLO, destination: DENVER })
+  })
+
+  it('asks which place is meant rather than guessing', async () => {
+    const paris = [
+      { label: 'Paris, Île-de-France, France', lat: 48.86, lng: 2.35 },
+      { label: 'Paris, TX, United States', lat: 33.66, lng: -95.56 },
+    ]
+    const fetch = stubApi({ '/api/geocode/': () => ({ body: paris }) })
+    renderWithQuery(<App />)
+    const user = userEvent.setup()
+    await user.type(screen.getByRole('combobox', { name: 'From' }), 'paris')
+    await user.type(screen.getByRole('combobox', { name: 'To' }), 'paris, tx')
+    await user.type(screen.getByLabelText('Load weight in pounds'), '0')
+    await user.click(planButton())
+    expect(await screen.findByText('More than one place matches. Pick one from the list.')).toBeInTheDocument()
+    expect(await screen.findByRole('option', { name: 'Paris, Île-de-France, France' })).toBeInTheDocument()
+    expect(fetch.mock.calls.some(([url]) => url === '/api/plans/')).toBe(false)
+  })
+
+  it('notes the US gross limit only for trips from the US, and gives kilograms elsewhere', async () => {
+    const manila = { label: 'Manila, National Capital Region, Philippines', lat: 14.6, lng: 120.98 }
+    stubApi({ '/api/geocode/': (url) => ({ body: /manila/i.test(url.searchParams.get('q')!) ? [manila] : [AMARILLO] }) })
+    renderWithQuery(<App />)
+    const user = userEvent.setup()
+    const from = screen.getByRole('combobox', { name: 'From' })
+    await user.type(screen.getByLabelText('Load weight in pounds'), '50000')
+    await user.type(from, 'amarillo')
+    await user.click(await screen.findByRole('option', { name: AMARILLO.label }))
+    expect(screen.getByText('85,000 lb gross, over the usual US 80,000')).toBeInTheDocument()
+    await user.clear(from)
+    await user.type(from, 'manila')
+    await user.click(await screen.findByRole('option', { name: manila.label }))
+    expect(screen.getByText('22,680 kg load, 38,555 kg gross with the truck')).toBeInTheDocument()
+    expect(screen.getByText(/Manila time, GMT\+8/)).toBeInTheDocument()
   })
 
   it('points at each missing field and moves focus to the first', async () => {
@@ -166,6 +200,15 @@ describe('results', () => {
     expect(within(log).getByText('No forecast')).toBeInTheDocument()
   })
 
+  it('says how much of a route is by ferry', async () => {
+    const body = makePlan()
+    body.routes[0].ferry_mi = 487.2
+    await plan(body)
+    expect(screen.getByText('487 mi of Route A is by ferry. Its risk uses the same rules as the road.')).toBeInTheDocument()
+    const routes = screen.getByRole('radiogroup', { name: 'Routes' })
+    expect(within(routes).getAllByText(/by ferry/)).toHaveLength(1)
+  })
+
   it('shows the advisory when every route has No Travel miles', async () => {
     await plan(makePlan({ advisory: 'Every route crosses No Travel conditions. Consider delaying departure.' }))
     expect(screen.getByRole('heading', { name: 'Best available: Route A' })).toBeInTheDocument()
@@ -198,7 +241,7 @@ describe('results', () => {
   it('goes back to change the trip with the form still filled in', async () => {
     const user = await plan()
     await user.click(screen.getByRole('button', { name: 'Change trip' }))
-    await waitFor(() => expect(screen.getByRole('combobox', { name: 'From' })).toHaveValue('Amarillo, TX'))
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'From' })).toHaveValue('Amarillo, TX, United States'))
     expect(screen.getByLabelText('Load weight in pounds')).toHaveValue('42,000')
   })
 

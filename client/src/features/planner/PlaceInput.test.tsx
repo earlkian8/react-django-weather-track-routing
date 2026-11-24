@@ -29,9 +29,9 @@ describe('PlaceInput', () => {
     const fetch = stubApi({ '/api/geocode/': () => ({ body: [DALLAS, DALLAS_OR] }) })
     const { input, user, onChange } = setup()
     await user.type(input, 'dallas')
-    await user.click(await screen.findByRole('option', { name: 'Dallas, TX' }))
-    expect(onChange).toHaveBeenLastCalledWith({ text: 'Dallas, TX', place: DALLAS })
-    expect(input).toHaveValue('Dallas, TX')
+    await user.click(await screen.findByRole('option', { name: 'Dallas, TX, United States' }))
+    expect(onChange).toHaveBeenLastCalledWith({ text: 'Dallas, TX, United States', place: DALLAS })
+    expect(input).toHaveValue('Dallas, TX, United States')
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
     expect(fetch).toHaveBeenCalledTimes(1)
   })
@@ -42,10 +42,10 @@ describe('PlaceInput', () => {
     await user.type(input, 'dallas')
     await screen.findByRole('listbox')
     await user.keyboard('{ArrowDown}{ArrowDown}')
-    expect(screen.getByRole('option', { name: 'Dallas, OR' })).toHaveAttribute('aria-selected', 'true')
-    expect(input).toHaveAttribute('aria-activedescendant', screen.getByRole('option', { name: 'Dallas, OR' }).id)
+    expect(screen.getByRole('option', { name: 'Dallas, OR, United States' })).toHaveAttribute('aria-selected', 'true')
+    expect(input).toHaveAttribute('aria-activedescendant', screen.getByRole('option', { name: 'Dallas, OR, United States' }).id)
     await user.keyboard('{Enter}')
-    expect(onChange).toHaveBeenLastCalledWith({ text: 'Dallas, OR', place: DALLAS_OR })
+    expect(onChange).toHaveBeenLastCalledWith({ text: 'Dallas, OR, United States', place: DALLAS_OR })
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
@@ -53,9 +53,9 @@ describe('PlaceInput', () => {
     stubApi({ '/api/geocode/': () => ({ body: [DALLAS] }) })
     const { input, user, onChange } = setup()
     await user.type(input, 'dallas')
-    await user.click(await screen.findByRole('option', { name: 'Dallas, TX' }))
+    await user.click(await screen.findByRole('option', { name: 'Dallas, TX, United States' }))
     await user.type(input, 'x')
-    expect(onChange).toHaveBeenLastCalledWith({ text: 'Dallas, TXx', place: null })
+    expect(onChange).toHaveBeenLastCalledWith({ text: 'Dallas, TX, United Statesx', place: null })
   })
 
   it('closes on Escape and stays closed until typing again', async () => {
@@ -68,11 +68,24 @@ describe('PlaceInput', () => {
     expect(input).toHaveValue('dallas')
   })
 
+  it('opens again with the down arrow, or on returning to the box', async () => {
+    stubApi({ '/api/geocode/': () => ({ body: [DALLAS, DALLAS_OR] }) })
+    const { input, user } = setup()
+    await user.type(input, 'dallas')
+    await screen.findByRole('listbox')
+    await user.keyboard('{Escape}{ArrowDown}')
+    expect(screen.getByRole('listbox')).toBeInTheDocument()
+    await user.tab()
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+    await user.click(input)
+    expect(screen.getByRole('listbox')).toBeInTheDocument()
+  })
+
   it('says when nothing matches', async () => {
     stubApi({ '/api/geocode/': () => ({ body: [] }) })
     const { input, user } = setup()
     await user.type(input, 'qqzzxx')
-    expect(await screen.findByText('No places match. Try a city and state.')).toBeInTheDocument()
+    expect(await screen.findByText('No places match. Try a city and country.')).toBeInTheDocument()
   })
 
   it('says why search failed', async () => {

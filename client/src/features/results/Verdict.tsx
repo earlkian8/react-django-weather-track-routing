@@ -1,4 +1,4 @@
-import { CircleHelp } from 'lucide-react'
+import { CircleHelp, Ship } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useEffect, useRef } from 'react'
 import type { Plan } from '../../api/types'
@@ -36,7 +36,9 @@ export function Verdict({ plan }: { plan: Plan }) {
         </div>
         <p className={styles.destination}>
           <span>{placeName(plan.destination.label)}</span>
-          <span>{Math.round(best.distance_mi).toLocaleString('en-US')}</span>
+          <span>
+            {Math.round(best.distance_mi).toLocaleString('en-US')} <small>mi</small>
+          </span>
         </p>
         <p className={styles.arrival}>
           {formatDuration(best.duration_min)}, arriving {formatWeekday(arrival, zone)} {formatTime(arrival, zone)} {zoneAbbr(arrival, zone)}
@@ -49,8 +51,14 @@ export function Verdict({ plan }: { plan: Plan }) {
         </div>
       )}
       <p className={styles.reason}>{plan.recommendation}</p>
+      {best.ferry_mi > 0 && (
+        <p className={styles.note}>
+          <Ship size={17} aria-hidden />
+          {formatMiles(best.ferry_mi)} of {best.name} is by ferry. Its risk uses the same rules as the road.
+        </p>
+      )}
       {unknown_miles > 0 && (
-        <p className={styles.unknown}>
+        <p className={styles.note}>
           <CircleHelp size={17} aria-hidden />
           {formatMiles(unknown_miles)} of {best.name} have no forecast, so this pick is less certain.
         </p>

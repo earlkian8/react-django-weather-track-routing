@@ -1,4 +1,5 @@
 import uuid
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -142,6 +143,7 @@ def test_plan_response(client, services):
                 "rank": 1,
                 "via": ["I-40", "US-287"],
                 "distance_mi": 100.0,
+                "ferry_mi": 0.0,
                 "duration_min": 120,
                 "arrival_time": iso(DEPARTURE + timedelta(hours=2)),
                 "geometry": [[-100.0, 40.0], [-100.0, 41.0]],
@@ -179,6 +181,11 @@ def test_miles_are_rounded_to_a_tenth(client, services):
     assert [c["mile"] for c in route["checkpoints"]] == [0.0, 33.3]
     assert [c["segment_miles"] for c in route["checkpoints"]] == [16.7, 16.7]
     assert route["summary"]["miles_by_risk"]["low"] == 33.3
+
+
+def test_ferry_miles(client, services):
+    services.routes = [replace(make_route("A", -100.0), ferry_m=25.04 * METERS_PER_MILE)]
+    assert make_plan(client)["routes"][0]["ferry_mi"] == 25.0
 
 
 def test_duration_matches_the_recommendation(client, services):

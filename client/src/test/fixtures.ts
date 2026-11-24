@@ -54,6 +54,7 @@ export function makeRoute(id = 'A', risks: CheckpointRisk[] = ['low', 'low', 'lo
     rank: id.charCodeAt(0) - 64,
     via: ['I-40', 'US-287'],
     distance_mi: 100,
+    ferry_mi: 0,
     duration_min: 120,
     arrival_time: '2026-11-24T14:00:00Z',
     geometry: Array.from({ length: 101 }, (_, mile): LngLat => [lngAt(mile), 35]),

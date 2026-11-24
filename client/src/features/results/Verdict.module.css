@@ -47,6 +47,15 @@
   overflow-wrap: anywhere;
 }
 
+.destination small {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.destination span:last-child {
+  white-space: nowrap;
+}
+
 .arrival {
   margin-top: 5px;
   font-size: 16px;
@@ -58,14 +67,14 @@
   font-size: 16px;
 }
 
-.unknown {
+.note {
   display: flex;
   gap: 8px;
   margin: 9px 4px 0;
   color: var(--ink-2);
 }
 
-.unknown svg {
+.note svg {
   flex: none;
   margin-top: 2px;
 }

@@ -178,6 +178,7 @@ def _present_route(route: AssessedRoute, position: int) -> dict[str, Any]:
         "rank": position,
         "via": option.via,
         "distance_mi": round(option.distance_m / METERS_PER_MILE, 1),
+        "ferry_mi": round(option.ferry_m / METERS_PER_MILE, 1),
         "duration_min": round(option.duration_s) // 60,  # as in the recommendation
         "arrival_time": _iso(route.checkpoints[-1].checkpoint.eta),
         "geometry": [[round(lng, 5), round(lat, 5)] for lat, lng in option.points],

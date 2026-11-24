@@ -1,9 +1,10 @@
 import type { Checkpoint, Route } from '../api/types'
 import type { Waypoint } from './sun'
-import { formatHour, formatWeekday, zoneFor } from './time'
+import { clockAt, formatHour, formatWeekday, zoneFor } from './time'
 import { etaAt, mileAt, pointAt, type Track } from './track'
 
-const HOUR = 3_600_000
+// Every time zone is a whole number of these from UTC.
+const QUARTER_HOUR = 15 * 60_000
 const PLATE_SPACING_PX = 54
 const MILE_STEPS = [10, 25, 50, 100, 200, 500, 1000]
 
@@ -100,13 +101,14 @@ export function pickWindsocks(checkpoints: Checkpoint[], spacingMiles: number): 
 export function hourTicks(track: Track, points: RoadSample[], every: number, minGapMiles = 0): HourTick[] {
   const ticks: HourTick[] = []
   const end = points.at(-1)!.time
-  for (let time = Math.ceil(points[0].time / HOUR) * HOUR; time <= end; time += HOUR) {
+  for (let time = Math.ceil(points[0].time / QUARTER_HOUR) * QUARTER_HOUR; time <= end; time += QUARTER_HOUR) {
     const mile = mileAt(track, time)
     const { zone } = points.reduce((a, b) => (Math.abs(b.mile - mile) < Math.abs(a.mile - mile) ? b : a))
-    const label = formatHour(time, zone)
-    const hour = Number(new Intl.DateTimeFormat('en-US', { hour: 'numeric', hourCycle: 'h23', timeZone: zone }).format(time))
+    const { hour, minute } = clockAt(time, zone)
     const roomy = ticks.length === 0 || mile - ticks.at(-1)!.mile >= minGapMiles
-    if (hour % every === 0 && roomy) ticks.push({ mile, label: hour === 0 ? formatWeekday(time, zone) : label })
+    if (minute === 0 && hour % every === 0 && roomy) {
+      ticks.push({ mile, label: hour === 0 ? formatWeekday(time, zone) : formatHour(time, zone) })
+    }
   }
   return ticks
 }

@@ -47,6 +47,7 @@ class RouteOption:
     distance_m: float
     duration_s: float
     via: list[str]  # up to two main route numbers
+    ferry_m: float = 0.0
 
 
 def loaded_weight_kg(load_lb: float) -> int:
@@ -60,7 +61,7 @@ def geocode(query: str, limit: int = 5) -> list[Place]:
         {
             "q": query,
             "limit": limit,
-            "in": "countryCode:USA,CAN,MEX",
+            "lang": "en-US",
             "apiKey": _api_key(),
         },
         "HERE Geocoding",
@@ -126,6 +127,8 @@ def _parse_route(route: dict[str, Any]) -> RouteOption:
     cum_dist_m: list[float] = []
     cum_time_s: list[float] = []
     spans: list[dict[str, Any]] = []
+    ferry_m = 0.0
+    start = _departure(route["sections"][0])
 
     for section in route["sections"]:
         # Span offsets count from the start of their own section.
@@ -139,10 +142,16 @@ def _parse_route(route: dict[str, Any]) -> RouteOption:
         skip = 1 if points else 0
         base_m = cum_dist_m[-1] if points else 0.0
         base_s = cum_time_s[-1] if points else 0.0
+        departure = _departure(section)
+        if start and departure:
+            # Boarding and leaving a ferry take time between sections, outside any span.
+            base_s = max(base_s, (departure - start).total_seconds())
         points += section_points[skip:]
         cum_dist_m += [base_m + d for d in section_dist_m[skip:]]
         cum_time_s += [base_s + t for t in section_time_s[skip:]]
         spans += section["spans"]
+        if section.get("transport", {}).get("mode") == "ferry":
+            ferry_m += section_dist_m[-1]
 
     return RouteOption(
         id="",  # assigned once duplicates are gone
@@ -152,7 +161,13 @@ def _parse_route(route: dict[str, Any]) -> RouteOption:
         distance_m=cum_dist_m[-1],
         duration_s=cum_time_s[-1],
         via=_via(spans),
+        ferry_m=ferry_m,
     )
+
+
+def _departure(section: dict[str, Any]) -> datetime | None:
+    time = section.get("departure", {}).get("time")
+    return datetime.fromisoformat(time) if time else None
 
 
 def _via(spans: list[dict[str, Any]]) -> list[str]:

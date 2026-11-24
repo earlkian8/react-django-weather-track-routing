@@ -80,7 +80,8 @@ def test_geocode_request(mock_http):
     geocode("Dallas, TX", limit=2)
     url = mock_http.requests[0].url
     assert (url.host, url.path) == ("geocode.search.hereapi.com", "/v1/geocode")
-    expected = {"q": "Dallas, TX", "in": "countryCode:USA,CAN,MEX", "apiKey": TEST_KEY}
+    # Worldwide, with names in English whatever the country.
+    expected = {"q": "Dallas, TX", "lang": "en-US", "apiKey": TEST_KEY}
     assert mock_http.params == [{**expected, "limit": "5"}, {**expected, "limit": "2"}]
 
 
@@ -338,3 +339,55 @@ def test_route_with_a_long_extra_leg_is_not_a_duplicate(mock_http, longer_first)
     longer = base + column(-101.0, 50)
     pair = [longer, base] if longer_first else [base, longer]
     assert unique_count(mock_http, *pair) == 2
+
+
+# --- ferries ---------------------------------------------------------------
+
+
+def timed_section(points, spans, departure, mode="truck"):
+    return {
+        **section(points, spans),
+        "departure": {"time": departure},
+        "transport": {"mode": mode},
+    }
+
+
+def ferry_route():
+    """An hour's drive, a ferry with 20 min to board and 10 to unload, then a 30 min drive."""
+    return {
+        "sections": [
+            timed_section(LINE, [span(0, 1000, 3600)], "2026-11-25T08:00:00-06:00"),
+            timed_section(
+                [LINE[-1], (40.5, -100.0)], [span(0, 5000, 7200)], "2026-11-25T09:20:00-06:00", "ferry"
+            ),
+            timed_section(
+                [(40.5, -100.0), (40.6, -100.0)], [span(0, 1000, 1800)], "2026-11-25T11:30:00-06:00"
+            ),
+        ]
+    }
+
+
+def test_time_between_sections_counts_toward_etas(mock_http):
+    mock_http.replies = [routes(ferry_route())] * 3
+    option = get_routes()[0]
+    assert option.cum_time_s[2] == 3600  # reaches the port
+    assert option.cum_time_s[3] == 4800 + 7200  # boards, then sails
+    assert option.duration_s == option.cum_time_s[-1] == 12_600 + 1800
+
+
+def test_clock_changes_between_sections_are_not_waits(mock_http):
+    route = ferry_route()
+    route["sections"][1]["departure"]["time"] = "2026-11-25T10:20:00-05:00"
+    mock_http.replies = [routes(route)] * 3
+    assert get_routes()[0].duration_s == 12_600 + 1800
+
+
+def test_ferry_distance(mock_http):
+    mock_http.replies = [routes(ferry_route())] * 3
+    option = get_routes()[0]
+    assert (option.ferry_m, option.distance_m) == (5000, 7000)
+
+
+def test_road_routes_have_no_ferry_distance(mock_http):
+    mock_http.replies = [routes(route())] * 3
+    assert get_routes()[0].ferry_m == 0

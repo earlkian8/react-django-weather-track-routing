@@ -5,7 +5,7 @@ import { ApiError } from '../../api/client'
 import type { Heatmap, Place } from '../../api/types'
 import { hourSummaries, type Metric } from '../../domain/heat'
 import { RISKS, riskLabel } from '../../domain/risk'
-import { formatTime, formatWeekday, zoneAbbr, zoneFor } from '../../domain/time'
+import { clockAt, formatTime, formatWeekday, zoneAbbr, zoneFor } from '../../domain/time'
 import type { Drive } from '../../state/useDrive'
 import styles from './WeatherPanel.module.css'
 
@@ -130,7 +130,7 @@ function Hours({ heat, metric, hour, drive, departure, arrival, origin }: HoursP
       >
         {summaries.map((summary, i) => {
           const onTrip = timeAt(i) >= departure - HOUR && timeAt(i) <= arrival + HOUR
-          const midnight = new Date(timeAt(i)).toLocaleString('en-US', { hour: 'numeric', hourCycle: 'h23', timeZone: zone }) === '00'
+          const midnight = clockAt(timeAt(i), zone).hour === 0
           return (
             <span key={i} className={styles.column} data-current={i === hour} data-trip={onTrip} title={`Worst: ${riskLabel(summary.worst)}`}>
               <span className={styles.stack}>

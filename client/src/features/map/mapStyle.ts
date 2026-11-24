@@ -64,6 +64,12 @@ export function baseStyle(): StyleSpecification {
         layout: { 'text-field': NAME, 'text-font': ITALIC, 'text-size': 12, 'text-max-width': 6 },
         paint: { 'text-color': c('water-ink'), 'text-halo-color': c('water'), 'text-halo-width': 1 },
       },
+      {
+        id: 'road-number', type: 'symbol', source, 'source-layer': 'transportation_name', minzoom: 7,
+        filter: ['all', ['has', 'ref'], ['in', ['get', 'class'], ['literal', ['motorway', 'trunk']]], ['!', ['in', ['get', 'network'], ['literal', ['us-interstate', 'us-highway']]]]],
+        layout: { 'symbol-placement': 'line', 'symbol-spacing': 380, 'text-rotation-alignment': 'viewport', 'text-field': ['get', 'ref'], 'text-font': BOLD, 'text-size': 11, 'text-padding': 12 },
+        paint: { 'text-color': c('ink-2'), 'text-halo-color': c('halo'), 'text-halo-width': 2 },
+      },
       ...shields(source),
       label('town', ['in', ['get', 'class'], ['literal', ['town', 'village']]], {
         'text-size': byZoom(8, 11, 14, 15), 'symbol-sort-key': ['get', 'rank'],

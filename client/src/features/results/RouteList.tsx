@@ -1,6 +1,6 @@
 import type { Plan, Route } from '../../api/types'
 import { Shield } from '../../art/Shield'
-import { describeRisk, riskLabel } from '../../domain/risk'
+import { describeRisk, formatMiles, riskLabel } from '../../domain/risk'
 import { formatDuration, formatTime, zoneFor } from '../../domain/time'
 import { riskRuns } from '../../domain/track'
 import styles from './RouteList.module.css'
@@ -40,7 +40,10 @@ export function RouteList({ plan, selected, onSelect }: Props) {
               </span>
             </span>
             <Ribbon route={route} />
-            <span className={styles.bottom}>{describeRisk(route.summary)}</span>
+            <span className={styles.bottom}>
+              {describeRisk(route.summary)}
+              {route.ferry_mi > 0 && `, ${formatMiles(route.ferry_mi)} by ferry`}
+            </span>
           </span>
         </label>
       ))}

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ApiError, createPlan, searchPlaces } from '../api/client'
 import type { Place, Plan } from '../api/types'
-import { shortPlace } from '../domain/place'
+import { matchPlace } from '../domain/place'
 import { departureZone, emptyTrip, errorsFromApi, nextHalfHour, toRequest, validateTrip, type Trip, type TripErrors } from '../domain/trip'
 import { load, local, save, session } from './storage'
 
@@ -86,14 +86,16 @@ async function matchPlaces(trip: Trip, departTouched: boolean): Promise<{ trip: 
   const match = async (field: 'origin' | 'destination'): Promise<Place | null> => {
     const { text, place } = trip[field]
     if (place) return place
-    const [first] = await searchPlaces(text)
-    if (!first) errors[field] = `No place found for "${text.trim()}".`
-    return first ?? null
+    const places = await searchPlaces(text)
+    const match = matchPlace(text, places)
+    if (places.length === 0) errors[field] = `No place found for "${text.trim()}".`
+    else if (!match) errors[field] = 'More than one place matches. Pick one from the list.'
+    return match
   }
   const [origin, destination] = await Promise.all([match('origin'), match('destination')])
   const filled = { ...trip }
-  if (origin) filled.origin = { text: shortPlace(origin.label), place: origin }
-  if (destination) filled.destination = { text: shortPlace(destination.label), place: destination }
+  if (origin) filled.origin = { text: origin.label, place: origin }
+  if (destination) filled.destination = { text: destination.label, place: destination }
   if (origin && !trip.origin.place && !departTouched) filled.depart = nextHalfHour(Date.now(), departureZone(origin))
   return { trip: filled, errors }
 }

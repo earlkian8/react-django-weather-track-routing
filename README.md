@@ -4,7 +4,7 @@ Plans truck trips, compares up to three routes by the weather risk along each on
 
 ## Backend
 
-A Django REST API in `server/`. HERE provides geocoding and truck routes. Open-Meteo provides forecasts and needs no key.
+A Django REST API in `server/`. HERE provides geocoding and truck routes, and Open-Meteo provides forecasts with no key needed. Both cover the world.
 
 ```
 server/routing/
@@ -94,6 +94,7 @@ Response, shortened to one route, one checkpoint and two geometry points. Routes
       "rank": 1,
       "via": ["US-87", "US-287"],
       "distance_mi": 798.4,
+      "ferry_mi": 0.0,
       "duration_min": 734,
       "arrival_time": "2026-11-24T12:34:26Z",
       "geometry": [[-96.7951, 32.77823], [-96.79498, 32.77826]],
@@ -178,12 +179,19 @@ Available for 1 hour after the plan was made. Shortened to one cell and three ho
 - **Rain + showers.** Open-Meteo reports convective showers separately from rain. Both are liquid, so they are added together.
 - **Preceding-hour precipitation.** Rain and snow are totals for the hour before each timestamp, so a checkpoint uses the first hour mark at or after its ETA. Wind is instantaneous, so it uses the nearest hour.
 
+**Coverage**
+
+- **Worldwide.** Places can be anywhere, with names in English. HERE decides where truck routes exist; without one, planning returns a 400. Trips across the 180° meridian are untested.
+- **Units are always miles, mph, inches and pounds**, as the risk rules are defined in them.
+- **Typed places.** The API uses the first match for text. The web app asks when more than one place matches, so it never guesses.
+
 **Routes and ranking**
 
 - **No Travel ranking.** No Travel isn't in the brief's ranking, so it's treated as worse than Severe. The order is fewest No Travel, Severe, then High miles, then lowest average risk, then shortest duration. Miles are compared to 0.1 and average risk to 3 decimals.
 - **Unknown miles** (no forecast) count toward no risk level, so a route with missing forecasts can rank above one with known risk. `unknown_miles` shows how much is missing.
 - **Tare weight.** HERE is given the load plus 35,000 lb for the empty truck (`TRUCK_TARE_LB`). An 80,000 lb load is accepted, though the gross weight then exceeds the usual US limit.
-- **ETAs** use the duration HERE gives for each stretch of road. They include no rest stops or driving-hour limits.
+- **ETAs** use the duration HERE gives for each stretch of road, plus its boarding and unloading time at ferries. They include no rest stops or driving-hour limits. HERE can be much slower for heavy trucks in some countries.
+- **Ferries.** `ferry_mi` is the distance by ferry. Those miles count toward risk by the same rules as road miles, without sea conditions.
 - **Duplicate routes.** Two routes are the same if 90% of their points, rounded to 0.01°, overlap. With fewer than three routes, HERE is asked again for shortest and then toll-free routes.
 - **Route labels.** `via` lists the two route numbers covering the most distance. Two numbers can share one road, such as I-70 and US-40.
 - **Restriction notices** from HERE aren't read, so a route that HERE flags for a truck restriction isn't marked.
@@ -236,8 +244,9 @@ The basemap comes from [OpenFreeMap](https://openfreemap.org), which needs no ke
 
 - **One clock.** The truck on the map, the truck on the drive strip and the weather map's hour all follow one time. Moving any of them moves the rest.
 - **Drive strip.** The sky is colored by the sun's height where and when the truck passes. Clouds, rain, snow and windsocks come from checkpoint forecasts. The API has no cloud cover, terrain or wind direction, so none is drawn: windsocks show speed only.
-- **Local times.** Times use the time zone at each place, so the hour repeats or skips where a route crosses a zone. Departure is read in the origin's time zone.
+- **Local times.** Times use the time zone at each place, including half-hour and quarter-hour zones, so the hour repeats or skips where a route crosses a zone. Departure is read in the origin's time zone.
+- **Road numbers.** US Interstates and highways get their shields. Every other road number gets a plain plate.
 - **Weather map.** Loaded only when a layer is switched on, because one can use up to 400 Open-Meteo locations.
 - **Risk is never color alone.** Each level has its own road sign shape, and the checkpoint log lists every value as text.
 - **Reloading** restores the last plan from session storage without calling the API. The form is remembered in local storage.
-- **Truck weight.** The load field shows gross weight using a 35,000 lb truck, which must match `TRUCK_TARE_LB` in the backend settings.
+- **Truck weight.** The load field shows gross weight using a 35,000 lb truck, which must match `TRUCK_TARE_LB` in the backend settings. From the US it notes the 80,000 lb gross limit; elsewhere it shows kilograms.

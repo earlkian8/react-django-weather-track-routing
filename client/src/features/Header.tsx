@@ -1,7 +1,7 @@
 import { Moon, PencilLine, Sun } from 'lucide-react'
 import type { Plan } from '../api/types'
 import { Brandmark } from '../art/Brandmark'
-import { shortPlace } from '../domain/place'
+import { tripTitle } from '../domain/place'
 import { formatDay, formatTime, zoneAbbr, zoneFor } from '../domain/time'
 import { setTheme, useTheme } from '../state/theme'
 import styles from './Header.module.css'
@@ -48,9 +48,7 @@ function TripSummary({ plan }: { plan: Plan }) {
   const zone = zoneFor(plan.origin.lat, plan.origin.lng)
   return (
     <p className={styles.trip}>
-      <strong>
-        {shortPlace(plan.origin.label)} to {shortPlace(plan.destination.label)}
-      </strong>
+      <strong>{tripTitle(plan.origin.label, plan.destination.label)}</strong>
       <span>
         Leaves {formatDay(leaves, zone)} at {formatTime(leaves, zone)} {zoneAbbr(leaves, zone)} with{' '}
         {plan.load_weight_lb === 0 ? 'no load' : `${plan.load_weight_lb.toLocaleString('en-US')} lb`}
