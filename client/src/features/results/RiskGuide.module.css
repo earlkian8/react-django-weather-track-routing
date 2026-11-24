@@ -1,0 +1,56 @@
+.guide {
+  margin: 18px 4px 4px;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.guide summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+
+.guide summary::-webkit-details-marker {
+  display: none;
+}
+
+.guide summary svg {
+  transition: rotate 0.2s;
+}
+
+.guide[open] summary svg {
+  rotate: 180deg;
+}
+
+.guide table {
+  width: 100%;
+  margin: 10px 0;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.guide th,
+.guide td {
+  padding: 5px 0;
+  text-align: right;
+  font-weight: 400;
+  border-bottom: 1px solid var(--line);
+}
+
+.guide th:first-child {
+  text-align: left;
+}
+
+.guide tbody th span {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--ink);
+  font-weight: 600;
+}

@@ -1,0 +1,119 @@
+.wrap,
+.map {
+  position: absolute;
+  inset: 0;
+}
+
+.map {
+  font-family: var(--font);
+}
+
+.failed {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--ink-2);
+}
+
+.fit {
+  position: absolute;
+  z-index: 2;
+  top: 78px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border-radius: 5px;
+  background: var(--raised);
+  box-shadow: var(--shadow);
+}
+
+.fit:hover {
+  background: var(--hover);
+}
+
+.wrap :global(.maplibregl-ctrl-group) {
+  background: var(--raised);
+  box-shadow: var(--shadow);
+}
+
+.wrap :global(.maplibregl-ctrl-group button + button) {
+  border-color: var(--line);
+}
+
+:global([data-theme='night']) .wrap :global(.maplibregl-ctrl-icon) {
+  filter: invert(1);
+}
+
+.wrap :global(.maplibregl-ctrl-attrib) {
+  background: color-mix(in srgb, var(--raised) 85%, transparent);
+  color: var(--ink-2);
+}
+
+.wrap :global(.maplibregl-ctrl-attrib a) {
+  color: inherit;
+}
+
+/* A small guide sign on a post, standing on the place. */
+.end {
+  display: grid;
+  justify-items: center;
+  pointer-events: none;
+}
+
+.end span {
+  padding: 5px 11px 3px;
+  border-radius: 6px;
+  border: 2px solid var(--sign-ink);
+  outline: 2px solid var(--sign);
+  background: var(--sign);
+  color: var(--sign-ink);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.end i {
+  width: 4px;
+  height: 22px;
+  margin-top: 2px;
+  background: #8b979b;
+  border: solid #14191c;
+  border-width: 0 1px;
+}
+
+.tag {
+  padding: 4px 10px 2px;
+  border-radius: 6px;
+  background: var(--raised);
+  color: var(--ink);
+  font-size: 14px;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+
+.tag:hover {
+  background: var(--hover);
+}
+
+.popup {
+  z-index: 4;
+  pointer-events: none;
+}
+
+.popup :global(.maplibregl-popup-content) {
+  padding: 11px 14px 10px;
+  border-radius: 8px;
+  background: var(--raised);
+  box-shadow: var(--shadow);
+}
+
+.popup :global(.maplibregl-popup-tip) {
+  border-top-color: var(--raised);
+  border-bottom-color: var(--raised);
+}

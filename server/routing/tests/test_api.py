@@ -181,6 +181,16 @@ def test_miles_are_rounded_to_a_tenth(client, services):
     assert route["summary"]["miles_by_risk"]["low"] == 33.3
 
 
+def test_duration_matches_the_recommendation(client, services):
+    services.routes = [
+        make_route("A", -100.0, hours=2 + 45.6 / 60),
+        make_route("B", -101.0, hours=3 + 10.9 / 60),
+    ]
+    plan = make_plan(client)
+    assert plan["recommendation"] == "Shortest duration: 2 h 45 min vs 3 h 10 min on Route B."
+    assert [route["duration_min"] for route in plan["routes"]] == [165, 190]
+
+
 def test_average_risk_is_rounded_to_three_decimals(client, services):
     services.routes = [make_route("A", -100.0, miles=90)]
     services.weather[-100.0] = {"wind_mph": 30.0}

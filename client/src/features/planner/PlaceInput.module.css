@@ -1,0 +1,112 @@
+.field {
+  position: relative;
+  min-width: 0;
+}
+
+.label {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.entry {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  margin-top: 2px;
+  padding: 4px 28px 2px 0;
+  border: 0;
+  border-bottom: 2px solid color-mix(in srgb, var(--sign-ink) 45%, transparent);
+  border-radius: 0;
+  background: none;
+  color: var(--sign-ink);
+  font-size: clamp(26px, 2.6vw, 38px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  text-overflow: ellipsis;
+  outline: none;
+}
+
+.input::placeholder {
+  color: color-mix(in srgb, var(--sign-ink) 62%, var(--sign));
+  font-weight: 600;
+  opacity: 1;
+}
+
+.input:focus {
+  border-bottom-color: var(--lane);
+  box-shadow: 0 2px 0 var(--lane);
+}
+
+.input[aria-invalid='true'] {
+  border-bottom-color: #ffd5d8;
+}
+
+.spinner {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  margin-top: -10px;
+  animation: spin 0.9s linear infinite;
+}
+
+.error {
+  margin-top: 8px;
+  padding: 3px 9px;
+  border-radius: 3px;
+  background: #fff;
+  color: #a3152c;
+  font-size: 14px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.list,
+.message {
+  position: absolute;
+  z-index: 20;
+  left: -8px;
+  right: -8px;
+  top: calc(100% + 10px);
+  padding: 6px;
+  border-radius: 8px;
+  background: var(--raised);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.message {
+  padding: 12px 14px;
+  color: var(--ink-2);
+}
+
+.option {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+  padding: 9px 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.option svg {
+  flex: none;
+  position: relative;
+  top: 2px;
+  color: var(--ink-2);
+}
+
+.option[aria-selected='true'] {
+  background: var(--hover);
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}

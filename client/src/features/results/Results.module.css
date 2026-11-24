@@ -1,0 +1,48 @@
+.results {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Map and strip fill the first screen; the checkpoint log follows. */
+.workspace {
+  display: grid;
+  grid-template-columns: 400px minmax(0, 1fr);
+  height: calc(100svh - var(--header) - 272px);
+  min-height: 420px;
+}
+
+.side {
+  overflow-y: auto;
+  padding: 18px;
+  background: var(--panel);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.map {
+  position: relative;
+  min-width: 0;
+  background: var(--map-land);
+}
+
+/* The readout takes a second row. */
+@media (max-width: 1080px) {
+  .workspace {
+    height: calc(100svh - var(--header) - 306px);
+  }
+}
+
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+
+  .side {
+    padding: 16px;
+  }
+
+  .map {
+    height: 62svh;
+  }
+}

@@ -1,0 +1,98 @@
+.scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  --sky-1: #3f86a3;
+  --sky-2: #5c9bb1;
+  --sky-3: #83b3bb;
+  --sky-4: #afcabf;
+  --sky-5: #d9dab4;
+  --sky-6: #f4d488;
+  --sun: #fff1c4;
+  --cloud-1: #e4ebe7;
+  --cloud-2: #b7c9cd;
+  --cloud-3: #7f9ba7;
+  --cloud-4: #506d7c;
+  --rain: #466373;
+  --ridge-1: #7fa4a8;
+  --ridge-2: #57868a;
+  --ridge-3: #3c6a66;
+  --plain: #8fa45c;
+  --plain-2: #7c9350;
+  --plain-3: #a6b56a;
+  --verge: #c0b57a;
+  --road: #454e53;
+  --road-2: #3a4247;
+  --paint: #f4f5ef;
+  --yellow: #ffc629;
+  --pole: #3d4a45;
+  --stars: 0;
+  --beam: 0;
+}
+
+:root[data-theme='night'] .scene {
+  --sky-1: #081320;
+  --sky-2: #0c1b2b;
+  --sky-3: #112538;
+  --sky-4: #173247;
+  --sky-5: #1f4259;
+  --sky-6: #2b566d;
+  --sun: #e6eef0;
+  --cloud-1: #33506a;
+  --cloud-2: #263f56;
+  --cloud-3: #1a2f43;
+  --cloud-4: #122333;
+  --rain: #3b5d78;
+  --ridge-1: #18324a;
+  --ridge-2: #12283b;
+  --ridge-3: #0d1f2e;
+  --plain: #14282a;
+  --plain-2: #102224;
+  --plain-3: #193032;
+  --verge: #26352f;
+  --road: #1d262d;
+  --road-2: #171f25;
+  --paint: #dfe6e6;
+  --yellow: #e6b62c;
+  --pole: #050b10;
+  --stars: 1;
+  --beam: 1;
+}
+
+.rain {
+  animation: fall 1.1s linear infinite;
+}
+
+.flash {
+  opacity: 0;
+  animation: flash 9s linear infinite;
+}
+
+@keyframes fall {
+  to {
+    stroke-dashoffset: -44;
+  }
+}
+
+@keyframes flash {
+  0%,
+  91%,
+  93.5%,
+  97%,
+  100% {
+    opacity: 0;
+  }
+  92%,
+  94.5% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rain,
+  .flash {
+    animation: none;
+  }
+}

@@ -1,0 +1,87 @@
+.sign {
+  padding: 17px 20px 15px;
+  border: 3px solid var(--sign-ink);
+  border-radius: 13px;
+  outline: 4px solid var(--sign);
+  margin: 4px;
+  background: var(--sign);
+  color: var(--sign-ink);
+  transform-origin: 50% 0;
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.take {
+  outline: none;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.roads {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+}
+
+.destination {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 18px;
+  margin-top: 6px;
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.destination span:first-child {
+  overflow-wrap: anywhere;
+}
+
+.arrival {
+  margin-top: 5px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.reason {
+  margin: 14px 4px 0;
+  font-size: 16px;
+}
+
+.unknown {
+  display: flex;
+  gap: 8px;
+  margin: 9px 4px 0;
+  color: var(--ink-2);
+}
+
+.unknown svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+/* A Type III barricade. */
+.advisory {
+  margin: 14px 4px 0;
+  padding: 10px 0;
+  border-radius: 4px;
+  background: repeating-linear-gradient(-45deg, #f26a21 0 16px, #fff 16px 32px);
+}
+
+.advisory p {
+  padding: 10px 14px;
+  background: #fff;
+  color: #14191c;
+  font-size: 16px;
+  font-weight: 700;
+}

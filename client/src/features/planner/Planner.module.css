@@ -1,0 +1,424 @@
+.planner {
+  position: relative;
+  min-height: calc(100svh - var(--header));
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.form {
+  position: relative;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: clamp(20px, 5vh, 56px) 24px 24px;
+  transform-origin: 50% 40%;
+}
+
+.gantry {
+  position: relative;
+  z-index: 2;
+}
+
+/* The bridge spans the whole road. */
+.truss {
+  position: absolute;
+  left: 50%;
+  top: 26px;
+  width: 100vw;
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+/* Two lattice columns, standing on either side of the road. */
+.legs {
+  --leg: 34px;
+  position: absolute;
+  left: 50%;
+  top: 34px;
+  width: calc(100vw - 48px);
+  height: 200vh;
+  translate: -50% 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, #7f8b90 5px, transparent 5px 29px, #a5b0b3 29px) left / var(--leg) 100% no-repeat,
+    linear-gradient(90deg, #7f8b90 5px, transparent 5px 29px, #a5b0b3 29px) right / var(--leg) 100% no-repeat,
+    repeating-linear-gradient(40deg, transparent 0 24px, #93a0a4 24px 27px) left / var(--leg) 100% no-repeat,
+    repeating-linear-gradient(-40deg, transparent 0 24px, #93a0a4 24px 27px) right / var(--leg) 100% no-repeat;
+}
+
+@media (max-width: 1300px) {
+  .legs {
+    display: none;
+  }
+}
+
+.signs {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.sign {
+  position: relative;
+  min-height: 146px;
+  padding: 12px 30px;
+  display: grid;
+  align-content: center;
+  border: 3px solid var(--sign-ink);
+  border-radius: 14px;
+  background: var(--sign);
+  color: var(--sign-ink);
+  outline: 4px solid var(--sign);
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.28);
+}
+
+.swap {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 3px solid var(--sign);
+  background: var(--sign-ink);
+  color: #00523c;
+  transition: rotate 0.3s;
+}
+
+.swap:hover {
+  rotate: 180deg;
+}
+
+.plates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 18px;
+  margin-top: 30px;
+}
+
+.board,
+.regulatory,
+.interval {
+  box-shadow: 0 6px 14px rgb(0 0 0 / 0.26);
+}
+
+.board {
+  flex: 1.5 1 300px;
+  min-width: 0;
+  padding: 12px 18px 12px;
+  border-radius: 6px;
+  border: 5px solid #2d3438;
+  background: #0e1214;
+  color: #ffb627;
+}
+
+.boardLabel {
+  font-weight: 600;
+  color: #e9dcc0;
+}
+
+.leds {
+  position: relative;
+}
+
+.leds input {
+  width: 100%;
+  min-width: 0;
+  padding: 3px 0;
+  border: 0;
+  background: none;
+  color: #ffb627;
+  color-scheme: dark;
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 9px rgb(255 182 39 / 0.55);
+}
+
+/* Breaks the lettering into lamps. */
+.leds::after {
+  content: '';
+  position: absolute;
+  inset: 0 30px 0 0;
+  pointer-events: none;
+  background:
+    linear-gradient(#0e1214 0.9px, transparent 0.9px) 0 0 / 100% 3px,
+    linear-gradient(90deg, #0e1214 0.9px, transparent 0.9px) 0 0 / 3px 100%;
+  opacity: 0.62;
+}
+
+.leds:focus-within::after {
+  opacity: 0.25;
+}
+
+.boardNote,
+.boardError {
+  font-size: 14px;
+  color: #d6c9ad;
+}
+
+.boardError {
+  color: #ff9c8f;
+  font-weight: 600;
+}
+
+.regulatory {
+  flex: 1 1 220px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 3px solid #14191c;
+  outline: 4px solid #fff;
+  background: #fff;
+  color: #14191c;
+}
+
+.regulatory label,
+.interval legend {
+  font-weight: 600;
+}
+
+.weight {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.weight input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 2px solid #14191c33;
+  background: none;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.25;
+  outline: none;
+}
+
+.weight input:focus {
+  border-bottom-color: #14191c;
+}
+
+.weight input::placeholder {
+  color: #6d787b;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.weight span {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.regulatory p {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #49555a;
+}
+
+.regulatory .regulatoryError {
+  color: #a3152c;
+  font-weight: 600;
+}
+
+.interval {
+  flex: 0 1 auto;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 3px solid var(--sign-ink);
+  outline: 4px solid var(--interstate);
+  background: var(--interstate);
+  color: #fff;
+}
+
+.interval legend {
+  float: left;
+  width: 100%;
+}
+
+.markers {
+  display: flex;
+  gap: 8px;
+  clear: both;
+  padding-top: 8px;
+}
+
+.marker {
+  cursor: pointer;
+}
+
+.plate {
+  display: grid;
+  justify-items: center;
+  width: 68px;
+  padding: 7px 0 5px;
+  border-radius: 6px;
+  border: 2px solid rgb(255 255 255 / 0.55);
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1.05;
+  transition: background 0.15s;
+}
+
+.plate small {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.marker:hover .plate {
+  background: rgb(255 255 255 / 0.14);
+}
+
+.marker input:checked + .plate {
+  background: #fff;
+  color: #14191c;
+  border-color: #fff;
+}
+
+.marker input:focus-visible + .plate {
+  outline: 3px solid var(--lane);
+  outline-offset: 2px;
+}
+
+.go {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+/* Brown, as for places to visit. */
+.example {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+  padding: 11px 18px 9px;
+  border-radius: 8px;
+  border: 2px solid #fff;
+  outline: 3px solid #5d3a1f;
+  background: #5d3a1f;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  box-shadow: 0 6px 14px rgb(0 0 0 / 0.26);
+}
+
+.example:hover {
+  background: #704727;
+}
+
+.example:focus-visible {
+  outline: 4px solid var(--lane);
+}
+
+.alert {
+  flex: 1 1 320px;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 11px 15px;
+  border-radius: 6px;
+  background: #fff;
+  color: #8f1226;
+  font-weight: 600;
+}
+
+.alert svg {
+  flex: none;
+}
+
+.submit {
+  min-width: 240px;
+  padding: 15px 30px 13px;
+  border-radius: 8px;
+  border: 3px solid var(--lane-ink);
+  outline: 4px solid var(--lane);
+  background: var(--lane);
+  color: var(--lane-ink);
+  font-size: 22px;
+  font-weight: 800;
+  box-shadow: 0 6px 14px rgb(0 0 0 / 0.3);
+  transition: translate 0.12s;
+}
+
+.submit:hover {
+  background: #ffd34f;
+}
+
+.submit:active {
+  translate: 0 2px;
+}
+
+.submit:focus-visible {
+  outline: 4px solid #fff;
+}
+
+.submit[aria-disabled='true'] {
+  cursor: progress;
+}
+
+@media (max-width: 720px) {
+  .form {
+    padding: 18px 16px 200px;
+  }
+
+  .signs {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+  }
+
+  .sign {
+    min-height: 0;
+    padding: 16px 20px 18px;
+  }
+
+  .truss {
+    top: 14px;
+  }
+
+  .swap svg {
+    rotate: 90deg;
+  }
+
+  .plates {
+    margin-top: 24px;
+    gap: 14px;
+  }
+
+  .leds input {
+    font-size: 23px;
+  }
+
+  .example {
+    flex: 1 1 100%;
+    justify-content: center;
+    order: 1;
+  }
+
+  .interval {
+    flex: 1 1 100%;
+  }
+
+  .marker {
+    flex: 1;
+  }
+
+  .plate {
+    width: auto;
+  }
+
+  .submit {
+    flex: 1;
+  }
+}

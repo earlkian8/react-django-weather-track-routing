@@ -1,0 +1,104 @@
+/*
+ * Colors come from the road: MUTCD guide green, pavement-marking yellow, Interstate blue,
+ * asphalt and concrete. Day and night are separate palettes, as on a navigation unit.
+ * Risk colors are checked for color-blind separation and always ship with a sign shape.
+ */
+:root {
+  --ground: #d9e0dd;
+  --panel: #f3f6f3;
+  --raised: #ffffff;
+  --line: #c3cdc8;
+  --line-strong: #93a29c;
+  --ink: #20292d;
+  --ink-2: #51605c;
+  --hover: #e6ece8;
+
+  --sign: #00644a;
+  --sign-deep: #004f3a;
+  --sign-ink: #f6fbf7;
+  --lane: #ffc629;
+  --lane-deep: #eeb00a;
+  --lane-ink: #20292d;
+  --asphalt: #343c41;
+  --asphalt-deep: #262d31;
+  --interstate: #17407c;
+  --interstate-red: #b4232f;
+  --focus: #17407c;
+  --danger: #a3152c;
+
+  --risk-low: #2b8a6c;
+  --risk-moderate: #f0b400;
+  --risk-high: #e86414;
+  --risk-severe: #ae112d;
+  --risk-no_travel: #641a96;
+  --risk-unknown: #7c8a86;
+
+  --metric-wind: #1f5f8b;
+  --metric-rain: #1c5fa8;
+  --metric-snow: #5b6fc0;
+
+  --map-land: #e4e9e0;
+  --map-wood: #d6e0d2;
+  --map-park: #d2dfcd;
+  --map-water: #b3cfd9;
+  --map-water-ink: #4e7688;
+  --map-border: #9aa69f;
+  --map-road: #ffffff;
+  --map-road-edge: #c9d1c9;
+  --map-ink: #37433f;
+  --map-ink-2: #66736e;
+  --map-halo: #eef2eb;
+  --map-alt: #6d7c80;
+
+  --shadow: 0 1px 2px rgb(32 41 45 / 0.16), 0 6px 18px rgb(32 41 45 / 0.14);
+  --font: 'Overpass Variable', 'Overpass', 'Highway Gothic', sans-serif;
+
+  color-scheme: light;
+}
+
+:root[data-theme='night'] {
+  --ground: #0c1620;
+  --panel: #14212d;
+  --raised: #1c2c3a;
+  --line: #2b3e4e;
+  --line-strong: #587083;
+  --ink: #e8eff1;
+  --ink-2: #a3b6c1;
+  --hover: #203343;
+
+  --sign: #00694d;
+  --sign-deep: #00523c;
+  --sign-ink: #f2fbf6;
+  --asphalt: #2a343c;
+  --asphalt-deep: #1c252c;
+  --interstate: #2b61ad;
+  --focus: #ffd23f;
+  --danger: #ff8a96;
+
+  --risk-low: #4fb89a;
+  --risk-moderate: #ffd23f;
+  --risk-high: #fb8436;
+  --risk-severe: #e5304a;
+  --risk-no_travel: #bc8cff;
+  --risk-unknown: #8ea0ab;
+
+  --metric-wind: #6fb6e6;
+  --metric-rain: #6aa5f2;
+  --metric-snow: #a9b6f7;
+
+  --map-land: #16242f;
+  --map-wood: #182a31;
+  --map-park: #192d32;
+  --map-water: #0d1924;
+  --map-water-ink: #5f8298;
+  --map-border: #4d6474;
+  --map-road: #33495a;
+  --map-road-edge: #1c2d3a;
+  --map-ink: #cfdbe1;
+  --map-ink-2: #93a7b3;
+  --map-halo: #111d27;
+  --map-alt: #7e93a1;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 22px rgb(0 0 0 / 0.4);
+  color-scheme: dark;
+}

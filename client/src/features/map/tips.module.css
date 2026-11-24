@@ -1,0 +1,39 @@
+.tip {
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tip > p:not(.head) {
+  color: var(--ink-2);
+}
+
+.amounts {
+  display: flex;
+  gap: 16px;
+  margin-top: 6px;
+}
+
+.amounts dt {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.amounts dd {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tip .factor {
+  margin-top: 5px;
+  color: var(--ink) !important;
+}

@@ -1,0 +1,100 @@
+.strip {
+  position: relative;
+  z-index: 5;
+}
+
+.view {
+  position: relative;
+  height: 204px;
+  overflow: hidden;
+  background: var(--panel);
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.view:focus-visible {
+  outline-offset: -3px;
+  outline-color: var(--lane);
+}
+
+.landscape {
+  position: absolute;
+  inset: 0;
+}
+
+.cursor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  width: 2px;
+  background: linear-gradient(rgb(255 255 255 / 0.65) 112px, var(--ink) 112px);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.truck {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 1px rgb(0 0 0 / 0.35));
+}
+
+.sunLabel {
+  font-size: 13px;
+  font-weight: 700;
+  fill: #fff;
+  stroke: rgb(32 25 30 / 0.6);
+  stroke-width: 3px;
+  paint-order: stroke;
+}
+
+.plate {
+  font-size: 13px;
+  font-weight: 700;
+  fill: #f6fbf7;
+}
+
+.axisName {
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--ink-2);
+}
+
+.tick {
+  font-size: 13px;
+  fill: var(--ink-2);
+}
+
+.tick[data-day='true'] {
+  font-weight: 800;
+  fill: var(--ink);
+}
+
+.landscape[data-moving='true'] .rain {
+  animation: rain 0.6s linear infinite;
+}
+
+.landscape[data-moving='true'] .snow {
+  animation: snow 1.6s linear infinite;
+}
+
+@keyframes rain {
+  to {
+    stroke-dashoffset: var(--travel);
+  }
+}
+
+@keyframes snow {
+  to {
+    stroke-dashoffset: var(--travel);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landscape .rain,
+  .landscape .snow {
+    animation: none !important;
+  }
+}

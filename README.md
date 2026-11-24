@@ -194,3 +194,50 @@ Available for 1 hour after the plan was made. Shortened to one cell and three ho
 - **Heatmap grid.** Covers 25 miles around each route with the finest grid (0.1° to 1.0°) that stays within 400 cells. Every grid is a multiple of 0.1°.
 - **Forecast horizon.** Each plan fetches at least 48 hours, or the longest trip plus 1 hour. Departures are limited to 7 days ahead. Open-Meteo forecasts reach about 15 days, so long trips still fit.
 - **Open-Meteo rate limits.** Its free tier is rate limited, and one heatmap can request up to 400 locations. Going over returns a 502 with Open-Meteo's reason.
+
+## Frontend
+
+A React 19 and TypeScript app in `client/`, built with Vite. MapLibre draws the map, Motion the animation, Lucide the interface icons and TanStack Query the place search and heatmap requests. The scene, signs, shields, truck, windsocks and risk symbols are drawn in SVG in `src/art/`.
+
+```
+client/src/
+  api/        Typed client for the Django API
+  domain/     Pure logic: tracks, time zones, sun, risk, heatmap, form rules
+  art/        Drawn graphics
+  state/      Planner, drive clock, theme
+  features/   planner, results, map, strip
+```
+
+### Setup
+
+Needs Node 22 or newer. Start the backend first, then:
+
+```bash
+cd client
+npm install
+npm run dev        # http://localhost:5173
+```
+
+| Command | Does |
+| --- | --- |
+| `npm run dev` | Development server |
+| `npm test` | Unit and interface tests. No network or backend needed. |
+| `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
+| `npm run build`, `npm run preview` | Production build, and a local server for it |
+
+The dev and preview servers pass `/api` on to `http://127.0.0.1:8000`, so the browser makes no cross-origin calls. Two optional settings go in `client/.env.local`:
+
+- `API_PROXY_TARGET`: where those servers send `/api`.
+- `VITE_API_BASE`: an absolute API address for a build hosted apart from the API. Add that site to the backend's `CORS_ALLOWED_ORIGINS`.
+
+The basemap comes from [OpenFreeMap](https://openfreemap.org), which needs no key.
+
+### How it works
+
+- **One clock.** The truck on the map, the truck on the drive strip and the weather map's hour all follow one time. Moving any of them moves the rest.
+- **Drive strip.** The sky is colored by the sun's height where and when the truck passes. Clouds, rain, snow and windsocks come from checkpoint forecasts. The API has no cloud cover, terrain or wind direction, so none is drawn: windsocks show speed only.
+- **Local times.** Times use the time zone at each place, so the hour repeats or skips where a route crosses a zone. Departure is read in the origin's time zone.
+- **Weather map.** Loaded only when a layer is switched on, because one can use up to 400 Open-Meteo locations.
+- **Risk is never color alone.** Each level has its own road sign shape, and the checkpoint log lists every value as text.
+- **Reloading** restores the last plan from session storage without calling the API. The form is remembered in local storage.
+- **Truck weight.** The load field shows gross weight using a 35,000 lb truck, which must match `TRUCK_TARE_LB` in the backend settings.

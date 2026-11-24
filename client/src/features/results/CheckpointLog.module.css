@@ -1,0 +1,124 @@
+.log {
+  padding: 26px 24px 48px;
+  background: var(--panel);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px 24px;
+  margin-bottom: 12px;
+}
+
+.head h2 {
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.filter input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--sign);
+}
+
+.none {
+  color: var(--ink-2);
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.log table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.log th,
+.log td {
+  padding: 8px 14px 8px 0;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.log thead th {
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.log th.number,
+.log td.number {
+  text-align: right;
+}
+
+.log th:last-child,
+.log td.why {
+  width: 40%;
+  padding-left: 22px;
+  white-space: normal;
+}
+
+.row {
+  cursor: pointer;
+}
+
+.row:hover {
+  background: var(--hover);
+}
+
+.row[aria-current] {
+  background: color-mix(in srgb, var(--lane) 24%, transparent);
+}
+
+.row[aria-current] small {
+  color: inherit;
+}
+
+/* A green mile marker. */
+.mile {
+  min-width: 52px;
+  padding: 3px 8px 1px;
+  border-radius: 4px;
+  border: 1.5px solid var(--sign-ink);
+  outline: 1.5px solid var(--sign);
+  background: var(--sign);
+  color: var(--sign-ink);
+  font-weight: 700;
+  text-align: center;
+}
+
+.mile:focus-visible {
+  outline: 3px solid var(--focus);
+}
+
+.log tbody th {
+  padding-left: 6px;
+}
+
+.log thead th:first-child {
+  padding-left: 6px;
+}
+
+.time small {
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.risk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
