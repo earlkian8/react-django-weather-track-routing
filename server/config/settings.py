@@ -85,6 +85,8 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+# Where collectstatic writes; the deploy build runs it.
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MAILERS = {
     'default': {
